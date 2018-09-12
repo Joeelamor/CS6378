@@ -5,7 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -21,7 +20,7 @@ public class Conn {
         new Thread(new Listener(port)).start();
     }
 
-    private class Listener implements Runnable{
+    private class Listener implements Runnable {
         private int port;
 
         private Listener(int port) {
@@ -56,7 +55,23 @@ public class Conn {
     }
 
     public void connect(int targetId, String host, int port) throws IOException {
-        Socket socket = new Socket(host, port);
+        Socket socket = null;
+        int retry = 3;
+        while (retry > 0) {
+            try {
+                socket = new Socket(host, port);
+                break;
+            } catch (IOException e) {
+                retry--;
+                if (retry == 0)
+                    throw e;
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
         ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
         ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
         System.out.println(inputStream);
@@ -81,7 +96,7 @@ public class Conn {
         for (Sender sender : senderMap.values()) {
             sender.send(message);
         }
-     }
+    }
 
     public Message getMessage() {
         while (true) {

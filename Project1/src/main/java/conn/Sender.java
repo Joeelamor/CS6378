@@ -19,6 +19,7 @@ public class Sender implements Runnable {
             if (queue.isEmpty())
                 continue;
             try {
+                outputStream.reset();
                 outputStream.writeObject(queue.poll());
             } catch (IOException e) {
                 e.printStackTrace();

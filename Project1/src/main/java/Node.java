@@ -7,8 +7,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Node {
     private Map<Integer, String[]> connectionList;
@@ -50,36 +52,43 @@ public class Node {
     public void start() {
         new Thread(() -> {
             while (true) {
-                conn.broadcast(new Message(nodeId, khop));
+                conn.broadcast(new Message(nodeId, new HashMap<>(khop)));
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }).start();
 
-        while (true) {
+        long startTime = new Date().getTime();
+        long curTime = 0;
+        long timeout = totalNumber * 2 * 1000;
+        while (curTime - startTime < timeout) {
             Message message = conn.getMessage();
+            System.out.println("received from " + message.getSenderId() + " with " + message.getNeighbors().toString());
             Map<Integer, Integer> neighbor = message.getNeighbors();
             for (Map.Entry<Integer, Integer> entry : neighbor.entrySet()) {
                 int key = entry.getKey();
                 int value = entry.getValue();
                 if (value == -1)
                     continue;
-                System.out.println("received:");
                 int tmp = value + 1;
-                if (tmp < khop.get(key)) {
+                if (tmp < khop.get(key) || khop.get(key) == -1) {
                     khop.put(key, tmp);
                 }
-                System.out.println("" + tmp + " " + khop.get(key));
             }
+            curTime = new Date().getTime();
         }
-
+        System.out.println(nodeId + "'s khop: " +
+                khop.entrySet()
+                        .stream()
+                        .map(entry -> entry.getKey() + ":" + entry.getValue())
+                        .collect(Collectors.joining(", ", "{", "}")));
     }
 
     public static void main(String[] args) throws FileNotFoundException, InvalidNodeNumberFormatException {
-        Parser parser = new Parser(args[0]);
+        Parser parser = new Parser("config.txt");
         String hostName = "";
         try {
             hostName = InetAddress.getLocalHost().getHostName();
