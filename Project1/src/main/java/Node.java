@@ -63,7 +63,7 @@ public class Node {
 
         long startTime = new Date().getTime();
         long curTime = 0;
-        long timeout = totalNumber * 2 * 1000;
+        long timeout = totalNumber * 10 * 1000;
         while (curTime - startTime < timeout) {
             Message message = conn.getMessage();
             System.out.println("received from " + message.getSenderId() + " with " + message.getNeighbors().toString());
@@ -88,7 +88,7 @@ public class Node {
     }
 
     public static void main(String[] args) throws FileNotFoundException, InvalidNodeNumberFormatException {
-        Parser parser = new Parser("config.txt");
+        Parser parser = new Parser(args[0]);
         String hostName = "";
         try {
             hostName = InetAddress.getLocalHost().getHostName();

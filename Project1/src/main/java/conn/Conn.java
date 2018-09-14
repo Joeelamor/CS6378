@@ -56,7 +56,7 @@ public class Conn {
 
     public void connect(int targetId, String host, int port) throws IOException {
         Socket socket = null;
-        int retry = 3;
+        int retry = 10;
         while (retry > 0) {
             try {
                 socket = new Socket(host, port);
@@ -66,7 +66,7 @@ public class Conn {
                 if (retry == 0)
                     throw e;
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }
