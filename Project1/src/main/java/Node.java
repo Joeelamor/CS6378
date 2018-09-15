@@ -7,9 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Node {
@@ -80,11 +78,20 @@ public class Node {
             }
             curTime = new Date().getTime();
         }
-        System.out.println(nodeId + "'s khop: " +
-                khop.entrySet()
+        TreeMap<Integer, List<Integer>> output = new TreeMap<>();
+        for (Map.Entry<Integer, Integer> entry : khop.entrySet()) {
+            if (!output.containsKey(entry.getValue())) {
+                output.put(entry.getValue(), new LinkedList<>());
+            }
+            output.get(entry.getValue()).add(entry.getKey());
+        }
+
+
+        System.out.println("Node " + nodeId + "'s khop: " +
+                output.entrySet()
                         .stream()
                         .map(entry -> entry.getKey() + ":" + entry.getValue())
-                        .collect(Collectors.joining(", ", "{", "}")));
+                        .collect(Collectors.joining(", \n\t", "{\n\t", "\n}")));
     }
 
     public static void main(String[] args) throws FileNotFoundException, InvalidNodeNumberFormatException {

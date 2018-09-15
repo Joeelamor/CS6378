@@ -22,7 +22,8 @@ public class Sender implements Runnable {
                 outputStream.reset();
                 outputStream.writeObject(queue.poll());
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println("out stream closed by other end.");
+                return;
             }
         }
     }
