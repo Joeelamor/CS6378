@@ -1,10 +1,5 @@
 # Advanced Operating System Project 1
 
-## Team Member
-- Jianjun Du (jxd151630)
-- Jing Zhou (jxz160330)
-- Zhang Lizhong (lxz160730)
-
 ## Complie
 Run `mvn package` in the folder, compiled and packaged `Project1-1.0-SNAPSHOT.jar` would be in `target` folder.
 
