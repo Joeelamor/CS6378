@@ -23,6 +23,7 @@ public class Receiver implements Runnable {
             while (true) {
                 Message message = (Message) this.inputStream.readObject();
                 queue.offer(message);
+                System.out.printf("receive %s\n", message);
                 time.compareIncrementAndGet(message.getTimestamp());
             }
         } catch (IOException e) {

@@ -16,10 +16,11 @@ public class Conn {
     private int nodeId;
     private ScalarClock time;
 
-    public Conn(int nodeId, int port, ScalarClock time) {
+    public Conn(int nodeId, int port, ScalarClock time, ConcurrentLinkedQueue<Message> messageQueue, ConcurrentHashMap<Integer, Sender> senderMap) {
         this.nodeId = nodeId;
         this.senderMap = new ConcurrentHashMap<>();
-        this.messageQueue = new ConcurrentLinkedQueue<>();
+        this.messageQueue = messageQueue;
+        this.senderMap = senderMap;
         this.time = time;
         new Thread(new Listener(port)).start();
     }
@@ -97,12 +98,4 @@ public class Conn {
         senderMap.get(id).send(message);
     }
 
-    public Message getMessage() {
-        while (true) {
-            if (messageQueue.isEmpty())
-                continue;
-            return messageQueue.poll();
-        }
-
-    }
 }
