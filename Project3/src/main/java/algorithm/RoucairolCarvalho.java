@@ -1,6 +1,5 @@
 package algorithm;
 
-
 import time.ScalarClock;
 
 public class RoucairolCarvalho {

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class Message implements Serializable {
     public enum Type {
-        REQ, RPY, INI, FINISH
+        REQ, RPY, INI, FINISH, END
     }
 
     private int senderId;

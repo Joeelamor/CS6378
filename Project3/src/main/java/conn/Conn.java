@@ -9,6 +9,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Semaphore;
 
 public class Conn {
     private ConcurrentHashMap<Integer, Sender> senderMap;
@@ -16,12 +17,17 @@ public class Conn {
     private int nodeId;
     private ScalarClock time;
 
-    public Conn(int nodeId, int port, ScalarClock time, ConcurrentLinkedQueue<Message> messageQueue, ConcurrentHashMap<Integer, Sender> senderMap) {
+    private Semaphore sema;
+    public Conn(int nodeId, int port, ScalarClock time,
+                ConcurrentLinkedQueue<Message> messageQueue,
+                ConcurrentHashMap<Integer, Sender> senderMap,
+                Semaphore sema) {
         this.nodeId = nodeId;
         this.senderMap = new ConcurrentHashMap<>();
         this.messageQueue = messageQueue;
         this.senderMap = senderMap;
         this.time = time;
+        this.sema = sema;
         new Thread(new Listener(port)).start();
     }
 
@@ -49,6 +55,7 @@ public class Conn {
                     send(message.getSenderId(), new Message(nodeId, Message.Type.INI, time.incrementAndGet()));
                     System.out.println(message);
                     new Thread(new Receiver(inputStream, messageQueue, time)).start();
+                    sema.release();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -92,6 +99,7 @@ public class Conn {
 
         new Thread(new Receiver(inputStream, messageQueue, time)).start();
         System.out.println("Connected an exited host");
+        sema.release();
     }
 
     public void send(int id, Message message) {
