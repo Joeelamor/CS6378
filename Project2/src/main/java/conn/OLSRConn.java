@@ -15,7 +15,7 @@ public class OLSRConn extends SimpleConn {
    * Time interval to check if the routes have converged. Check every 5 seconds,
    * if converged, stop sending HELLO and TC message.
    */
-  private final static long CONVERGENCE_CHECK_INTERVAL = 5000L;
+  private final static long CONVERGENCE_CHECK_INTERVAL = 15000L;
 
   /**
    * A set of all one-hop neighbors, created during connection time.
@@ -91,6 +91,8 @@ public class OLSRConn extends SimpleConn {
    * TC message received.
    */
   private HashMap<Integer, Pair<Integer, Integer>> RoutingTable = new HashMap<>();
+
+  public HashMap<Integer, List<Integer>> SpanningTree = new HashMap<>();
 
   /**
    * A broadcast message might be received from multiple relays, so a last
@@ -474,7 +476,7 @@ public class OLSRConn extends SimpleConn {
    */
   private void processRcvdTopologyControlMsg(Message message) {
     TCDataload dataload = (TCDataload) message.dataload;
-    Long currentSeq = 0L;
+    Long currentSeq = -1L;
     if (TopologyTable.containsKey(message.getOriginatorId()))
       currentSeq = TopologyTable.get(message.getOriginatorId()).getRight();
 
@@ -521,19 +523,24 @@ public class OLSRConn extends SimpleConn {
     HashMap<Integer, Pair<Integer, Integer>> RoutingTable = new HashMap<>();
     HashMap<Integer, Pair<Integer, Integer>> NHopNeighbors = new HashMap<>();
     HashMap<Integer, Pair<Integer, Integer>> NplusOneHopNeighbors;
+    HashMap<Integer, List<Integer>> SpanningTree = new HashMap<>();
 
     // The calculation is basically a BFS starting from current node.
     NHopNeighbors.put(nodeId, new ImmutablePair<>(nodeId, 0));
     while (!NHopNeighbors.isEmpty()) {
       RoutingTable.putAll(NHopNeighbors);
       NplusOneHopNeighbors = new HashMap<>();
+      HashSet<Integer> currentLevel = new HashSet<>();
       for (HashMap.Entry<Integer, Pair<Integer, Integer>> NHopNeighbor : NHopNeighbors.entrySet()) {
+        List<Integer> currentAdjList = new ArrayList<>();
         Integer NHopID = NHopNeighbor.getKey();
         if (!TopoSnapshot.containsKey(NHopID))
           continue;
         Pair<Integer, Integer> NHopNextHop = NHopNeighbor.getValue();
         for (Integer NplusOneHopNeighbor : TopoSnapshot.get(NHopID)) {
           if (RoutingTable.containsKey(NplusOneHopNeighbor))
+            continue;
+          if (currentLevel.contains(NplusOneHopNeighbor))
             continue;
           NplusOneHopNeighbors.put(
             NplusOneHopNeighbor,
@@ -542,11 +549,15 @@ public class OLSRConn extends SimpleConn {
               NHopNextHop.getRight() + 1
             )
           );
+          currentAdjList.add(NplusOneHopNeighbor);
+          currentLevel.add(NplusOneHopNeighbor);
         }
+        SpanningTree.put(NHopID, currentAdjList);
       }
       NHopNeighbors = NplusOneHopNeighbors;
     }
     this.RoutingTable = RoutingTable;
+    this.SpanningTree = SpanningTree;
   }
 
   /**
@@ -634,5 +645,26 @@ public class OLSRConn extends SimpleConn {
     public void run() {
       sendTopologyControlMsg();
     }
+  }
+
+  @Override
+  public String toString() {
+    return "OLSRConn{" +
+            "OneHopNeighbors=" + OneHopNeighbors +
+            ", PotentialTwoHopNeighbor=" + PotentialTwoHopNeighbor +
+            ", totalNodeNumber=" + totalNodeNumber +
+            ", MultiPointRelays=" + MultiPointRelays +
+            ", MultiPointRelaysSeq=" + MultiPointRelaysSeq +
+            ", MPRSelectors=" + MPRSelectors +
+            ", MPRSelectorsSeq=" + MPRSelectorsSeq +
+            ", MPRSelectorSent=" + MPRSelectorSent +
+            ", TopologyTable=" + TopologyTable +
+            ", RoutingTable=" + RoutingTable +
+            ", SpanningTree=" + SpanningTree +
+            ", LastMsgSeq=" + LastMsgSeq +
+            ", messageQueue=" + messageQueue +
+            ", converge=" + converge +
+            ", pendingBroadcastACK=" + pendingBroadcastACK +
+            '}';
   }
 }

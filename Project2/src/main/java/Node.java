@@ -43,11 +43,12 @@ public class Node {
     System.out.println("MPR (tree neighbors) set: " + conn.getMultiPointRelays());
     System.out.println("MPR selector set: " + conn.getMPRSelectors());
     System.out.println("routing table: " + conn.getRoutingTable());
+    System.out.println("spanning tree: " + conn.SpanningTree);
     System.out.println("=================================================");
     System.out.println();
     System.out.println();
     System.out.println();
-
+//
 //    for (int i = 0; i < 5; i++) {
 //      Thread.sleep(5000L);
 //      conn.broadcast("Node " + nodeId + " send a broadcast msg");
