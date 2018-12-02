@@ -4,15 +4,15 @@ import java.util.Comparator;
 
 public interface LogicalClock<FIRST, SECOND> {
 
-    Comparator<? extends FIRST> firstComparator();
+  Comparator<? extends FIRST> firstComparator();
 
-    Comparator<? extends SECOND> secondComparator();
+  Comparator<? extends SECOND> secondComparator();
 
-    FIRST incrementAndGet();
+  FIRST incrementAndGet();
 
-    FIRST compareIncrementAndGet(FIRST receivedTime);
+  FIRST compareIncrementAndGet(FIRST receivedTime);
 
-    FIRST get();
+  FIRST get();
 
 
 }
