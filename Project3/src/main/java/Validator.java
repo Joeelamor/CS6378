@@ -127,8 +127,10 @@ public class Validator {
     append(filename, String.format("Average Message complexity: %.2f per critical section", (double) totalMessagesCount / totalCS()));
 
     File af = new File(averageFile);
-    if (!af.exists())
+    if (!af.exists()) {
       af.createNewFile();
+      append(averageFile, "message complexity, response time, system throughput, synchronization delay");
+    }
     append(averageFile, String.format("%.2f, %.2f, %.2f, %.2f",
       (double) totalMessagesCount / totalCS(),
       calculateAverageRequestResponseTime(),
