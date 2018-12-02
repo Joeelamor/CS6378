@@ -80,46 +80,76 @@ public class Application {
                 StandardOpenOption.APPEND);
     }
 
-    private static boolean test() throws FileNotFoundException {
+    private static void test(File f, String filename) throws IOException {
         File file = new File(System.getProperty("user.home") + "/launch/record.txt");
         Scanner sc = new Scanner(file);
         int i = 0;
         String node = "";
         long reqTime = Long.MIN_VALUE, enterTime = Long.MIN_VALUE, quitTime = Long.MIN_VALUE;
+        String content = "Implement is correct!\n";
+        boolean correctImpl = true;
+        long responseTime = 0;
         while (sc.hasNextLine()) {
             String s = sc.nextLine();
             String[] str = s.trim().split("\\s+");
             if (i % 3 == 0) {
                 if (!str[0].equals("request")) { //first one should be request
-                    return false;
+                    correctImpl = false;
+                    break;
                 }
                 node = str[2]; // initial node with request node
                 reqTime = Long.parseLong(str[3]);
             } else if (i % 3 == 1) {
                 if (!str[0].equals("enter")) { // second one should be enter
-                    return false;
+                    correctImpl = false;
+                    break;
                 }
-                if (!str[2].equals(node)) // if enter node is same node
-                    return false;
+                if (!str[2].equals(node)) { // if enter node is same node
+                    correctImpl = false;
+                    break;
+                }
                 enterTime = Long.parseLong(str[3]);
-                if (enterTime < reqTime) // if enter time is larger than request time for same node
-                    return false;
-                if (enterTime < quitTime) // for first entering node
-                    return false;
+                if (enterTime < reqTime) { // if enter time is larger than request time for same node
+                    correctImpl = false;
+                    break;
+                }
+                if (enterTime < quitTime) { // for first entering node
+                    correctImpl = false;
+                    break;
+                }
+                responseTime = enterTime - reqTime;
+                content += responseTime + "\n";
             } else {
                 if (!str[0].equals("quit")) { // third one should be quit
-                    return false;
+                    correctImpl = false;
+                    break;
                 }
-                if (!str[2].equals(node)) // if quit node is same node
-                    return false;
+                if (!str[2].equals(node)) { // if quit node is same node
+                    correctImpl = false;
+                    break;
+                }
                 quitTime =  Long.parseLong(str[3]);
-                if (quitTime < enterTime) // if quit time is larger than enter time for same node
-                    return false;
+                if (quitTime < enterTime) { // if quit time is larger than enter time for same node
+                    correctImpl = false;
+                    break;
+                }
                 node = "";
             }
             i++;
         }
-        return true;
+        if (correctImpl) {
+            Files.write(
+                    Paths.get(filename),
+                    content.getBytes(),
+                    StandardOpenOption.APPEND);
+        } else {
+            content = "Implement is wrong!";
+            Files.write(
+                    Paths.get(filename),
+                    content.getBytes(),
+                    StandardOpenOption.APPEND);
+        }
+
     }
 
     public static void main(String[] args) throws IOException {
@@ -154,11 +184,9 @@ public class Application {
             String filename = System.getProperty("user.home") + "/launch/result.txt";
             File f = new File(filename);
             f.createNewFile();
-            String content = test() ? "Implementation is correct!\n" : "Implementation is wrong!\n";
-            Files.write(
-                    Paths.get(filename),
-                    content.getBytes(),
-                    StandardOpenOption.APPEND);
+            test(f, filename);
         }
     }
 }
+
+
