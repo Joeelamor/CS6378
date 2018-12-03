@@ -119,8 +119,8 @@ public class Application {
         totalNumber, interReqDelay, csExecTime, reqNum);
 
       Validator v = new Validator();
-      v.load(record);
-      v.dumpResult(result, average, node.getTotalMessagesCount());
+      boolean isValid = v.load(record);
+      v.dumpResult(result, average, node.getTotalMessagesCount(), isValid);
     }
   }
 }

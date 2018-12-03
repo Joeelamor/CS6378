@@ -73,20 +73,6 @@ public class Validator {
     return cs.get(cs.size() - 1).exitTS;
   }
 
-  public boolean isSorted() {
-    Iterator<CriticalSectionEvent> itr = cs.iterator();
-    if (!itr.hasNext())
-      return true;
-    CriticalSectionEvent pred = itr.next(), curr;
-    while (itr.hasNext()) {
-      curr = itr.next();
-      if (pred.compareTo(curr) > 0)
-        return false;
-      pred = curr;
-    }
-    return true;
-  }
-
   public double calculateAverageRequestResponseTime() {
     return cs.stream().mapToLong(e -> e.enterTS - e.reqTS).average().getAsDouble();
   }
@@ -105,7 +91,7 @@ public class Validator {
     return delays.stream().mapToDouble(a -> a).average().getAsDouble();
   }
 
-  public void dumpResult(String filename, String averageFile, int totalMessagesCount) throws IOException {
+  public void dumpResult(String filename, String averageFile, int totalMessagesCount, boolean isValid) throws IOException {
     SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     String now = timeFormat.format(new Date().getTime());
     File f = new File(filename);
@@ -116,7 +102,7 @@ public class Validator {
       System.out.println("Result file already exist, truncate with current result.");
     }
     append(filename, String.format("============ Result for %s ============", now));
-    append(filename, String.format("Experiment %s", isSorted() ? "finished without error." : "failed."));
+    append(filename, String.format("Experiment %s", isValid ? "finished without error." : "failed."));
     append(filename, String.format("Total number of node: %d", nodes.size()));
     append(filename, String.format("Total number of critical section: %d", totalCS()));
     append(filename, String.format("Experiment start timestamp: %s", timeFormat.format(startTime())));
