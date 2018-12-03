@@ -36,21 +36,21 @@ public class Application {
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-      System.out.println(node.getNodeId() + " trys to enter critical section");
       long reqTime = new Date().getTime();
+      System.out.println(reqTime + " node " + node.getNodeId() + " tries to enter critical section");
       node.csEnter();
       long enterTime = new Date().getTime();
       appendFile(filename, 0, node.getNodeId(), reqTime);
       appendFile(filename, 1, node.getNodeId(), enterTime);
+      System.out.println(enterTime + " node " + node.getNodeId() + " enters critical section");
 
       int execTime = (int) expo(csExecTime);
-      System.out.println(node.getNodeId() + " enter critical section");
       Thread.sleep(execTime);
 
       long quitTime = new Date().getTime();
       appendFile(filename, -1, node.getNodeId(), quitTime);
       node.csLeave();
-      System.out.println(node.getNodeId() + " quits critical section");
+      System.out.println(quitTime + " node " + node.getNodeId() + " quits critical section");
       i++;
     }
     node.end();

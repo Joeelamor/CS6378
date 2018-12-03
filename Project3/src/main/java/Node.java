@@ -69,7 +69,7 @@ public class Node implements Runnable {
     while (true) {
       op = RoucairolCarvalho.Operation.NOP;
       Message message = getMessage();
-      System.out.printf("receive %s\n", message);
+//      System.out.printf("receive %s\n", message);
       try {
         switch (message.getType()) {
           case REQ:
@@ -185,7 +185,7 @@ public class Node implements Runnable {
   }
 
   private void send(int id, Message message) {
-    System.out.printf("%d send %s to %d\n", nodeId, message, id);
+//    System.out.printf("%d send %s to %d\n", nodeId, message, id);
     outboundMessagesCount.getAndIncrement();
     conn.send(id, message);
   }

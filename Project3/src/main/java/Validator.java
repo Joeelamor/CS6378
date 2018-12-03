@@ -123,7 +123,7 @@ public class Validator {
     append(filename, String.format("Experiment end timestamp:   %s", timeFormat.format(endTime())));
     append(filename, String.format("Average request response time: %.2f ms", calculateAverageRequestResponseTime()));
     append(filename, String.format("Average synchronization delay: %.2f ms", calculateAverageSynchronizationDelay()));
-    append(filename, String.format("Average Request throughput: %.2f per minute", ((double) totalCS() * 1000 * 60) / (endTime() - startTime())));
+    append(filename, String.format("Average Request throughput: %.2f per minute", ((double) (totalCS() * 1000 * 60)) / (endTime() - startTime())));
     append(filename, String.format("Average Message complexity: %.2f per critical section", (double) totalMessagesCount / totalCS()));
 
     File af = new File(averageFile);
