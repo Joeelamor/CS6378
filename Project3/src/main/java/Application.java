@@ -26,7 +26,7 @@ public class Application {
     this.reqNum = reqNum;
   }
 
-  public void start(String filename) throws IOException {
+  public void start(String filename) throws IOException, InterruptedException {
     int i = 0;
 
     while (i < reqNum) {
@@ -36,7 +36,7 @@ public class Application {
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-      System.out.println(node.getNodeId() + "is trying to enter critical section");
+      System.out.println(node.getNodeId() + " trys to enter critical section");
       long reqTime = new Date().getTime();
       node.csEnter();
       long enterTime = new Date().getTime();
@@ -44,26 +44,20 @@ public class Application {
       appendFile(filename, 1, node.getNodeId(), enterTime);
 
       int execTime = (int) expo(csExecTime);
-      try {
-        System.out.println(node.getNodeId() + "is in critical section");
-        Thread.sleep(execTime);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+      System.out.println(node.getNodeId() + " enter critical section");
+      Thread.sleep(execTime);
+
       long quitTime = new Date().getTime();
       appendFile(filename, -1, node.getNodeId(), quitTime);
       node.csLeave();
-      System.out.println(node.getNodeId() + "quits critical section");
+      System.out.println(node.getNodeId() + " quits critical section");
       i++;
     }
     node.end();
   }
 
-  double expo(int lambda) {
-    double x, z;
-    z = Math.random();
-    x = -(1 / (double) lambda) * Math.log(z);
-    return x;
+  static double expo(int lambda) {
+    return -lambda * Math.log(Math.random());
   }
 
   void appendFile(String filename, int action, int id, long date) throws IOException {
@@ -111,7 +105,7 @@ public class Application {
 
     try {
       application.start(record);
-    } catch (IOException e) {
+    } catch (IOException | InterruptedException e) {
       e.printStackTrace();
     }
 

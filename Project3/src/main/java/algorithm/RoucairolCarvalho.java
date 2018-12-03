@@ -78,7 +78,6 @@ public class RoucairolCarvalho {
   }
 
   public void sendReply(int target) {
-    System.out.println(nodeId + " responses a reply to " + target);
     receivedReplies--;
     keys[target] = false;
   }

@@ -69,6 +69,7 @@ public class Node implements Runnable {
     while (true) {
       op = RoucairolCarvalho.Operation.NOP;
       Message message = getMessage();
+      System.out.printf("receive %s\n", message);
       try {
         switch (message.getType()) {
           case REQ:
