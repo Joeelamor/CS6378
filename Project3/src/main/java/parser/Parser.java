@@ -72,7 +72,7 @@ public class Parser {
     File file = new File(path);
     Scanner sc = new Scanner(file);
 
-    String[] firstLine = sc.nextLine().split(" ");
+    String[] firstLine = sc.nextLine().split("\\s+");
     totalNumber = Integer.parseInt(firstLine[0]);
     interReqDelay = Integer.parseInt(firstLine[1]);
     csExecTime = Integer.parseInt(firstLine[2]);
@@ -81,7 +81,7 @@ public class Parser {
     while (sc.hasNextLine()) {
       String s = sc.nextLine();
       if (s.length() != 0) {
-        String[] str = s.trim().split(" ");
+        String[] str = s.trim().split("\\s+");
 
         String host = str[1] + ".utdallas.edu";
         if (host.equals(Hostname)) {
